@@ -1,4 +1,5 @@
 const { program } = require("commander");
+const api = require("./index.js");
 
 program
   .option("-t, --todo", "todo")
@@ -8,7 +9,9 @@ program
 program
   .command("add <taskName>")
   .description("add a task")
-  .action((args, description) => {});
+  .action((_, description) => {
+    api.add(description.args);
+  });
 
 program
   .command("clear")
