@@ -13,3 +13,7 @@ module.exports.add = async tasks => {
   // 将所有任务写进文件
   await db.write(list);
 };
+
+module.exports.clear = async () => {
+  await db.write([]);
+};
