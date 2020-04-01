@@ -21,17 +21,97 @@ module.exports.clear = async () => {
 
 module.exports.showAll = async () => {
   const list = await db.read();
-  showAllTasks(list);
+  askForAction(list);
 };
 
-const showAllTasks = list => {
+const askForAction = list => {
+  const questions = {
+    type: "list",
+    name: "action",
+    message: "请选择你要进行的操作",
+    choices: [
+      { name: "退出", value: "quit" },
+      { name: "查看任务", value: "showAllTasks" },
+      { name: "创建任务", value: "askForCreate" },
+      { name: "编辑任务", value: "askForEdit" },
+      { name: "删除任务", value: "askForDelete" },
+      { name: "编辑为已完成", value: "askForMarkAsDone" },
+      { name: "编辑为未完成", value: "askForMarkAsUndone" }
+    ]
+  };
+  inquirer.prompt(questions).then(answers => {
+    const actions = {
+      showAllTasks,
+      askForCreate,
+      askForEdit,
+      askForDelete,
+      askForMarkAsDone,
+      askForMarkAsUndone
+    };
+    const action = actions[answers.action];
+    action && action(list);
+  });
+};
+
+const askForCreate = list => {
+  inquirer
+    .prompt({
+      type: "input",
+      name: "title",
+      message: "请输入任务名"
+    })
+    .then(answers => {
+      if (answers.title) {
+        list.push({ title: answers.title, done: false });
+        db.write(list);
+      }
+    });
+};
+
+const askForEdit = list => {
+  showAllTasks(list, index => {
+    inquirer
+      .prompt({
+        type: "input",
+        name: "title",
+        message: "请输入任务名",
+        default: list[index].title
+      })
+      .then(answers => {
+        list[index].title = answers.title;
+        db.write(list);
+      });
+  });
+};
+
+const askForDelete = list => {
+  showAllTasks(list, index => {
+    list.splice(index, 1);
+    db.write(list);
+  });
+};
+
+const askForMarkAsDone = list => {
+  showAllTasks(list, index => {
+    list[index].done = true;
+    db.write(list);
+  });
+};
+
+const askForMarkAsUndone = list => {
+  showAllTasks(list, index => {
+    list[index].done = false;
+    db.write(list);
+  });
+};
+
+const showAllTasks = (list, callback) => {
   const questions = {
     type: "list",
     name: "index",
-    message: "请选择你要进行的操作",
+    message: "选择任务",
     choices: [
-      { name: "退出", value: -1 },
-      { name: "创建任务", value: -2 },
+      { name: "退出", value: "-1" },
       ...list.map((item, index) => ({
         name: `${item.done ? "[√]" : "[x]"} ${index + 1}. ${item.title}`,
         value: index
@@ -40,74 +120,6 @@ const showAllTasks = list => {
   };
   inquirer.prompt(questions).then(answers => {
     const { index } = answers;
-    if (index === -2) {
-      // 创建任务
-      askForCreateTask(list);
-    } else if (index >= 0) {
-      // 选中任务
-      askForAction(list, index);
-    }
+    if (callback && index >= 0) callback(index);
   });
-};
-
-const askForCreateTask = list => {
-  inquirer
-    .prompt({
-      type: "input",
-      name: "title",
-      message: "请输入任务名"
-    })
-    .then(answers => {
-      list.push({ title: answers.title, done: false });
-      db.write(list);
-    });
-};
-
-const askForAction = (list, index) => {
-  const questions = {
-    type: "list",
-    name: "action",
-    message: "请选择你要进行的操作",
-    choices: [
-      { name: "退出", value: "quit" },
-      { name: "标记为完成", value: "markAsDone" },
-      { name: "标记为未完成", value: "markAsUndone" },
-      { name: "删除", value: "deleteTask" },
-      { name: "编辑", value: "editTask" }
-    ]
-  };
-  const actions = { markAsDone, markAsUndone, deleteTask, editTask };
-  inquirer.prompt(questions).then(answers => {
-    const action = actions[answers.action];
-    action && action(list, index);
-  });
-};
-
-const markAsDone = (list, index) => {
-  list[index].done = true;
-  db.write(list);
-};
-
-const markAsUndone = (list, index) => {
-  list[index].done = false;
-  db.write(list);
-};
-
-const deleteTask = (list, index) => {
-  list.splice(index, 1);
-  db.write(list);
-};
-
-const editTask = (list, index) => {
-  inquirer
-    .prompt({
-      type: "input",
-      name: "title",
-      message: "请输入任务名",
-      default: list[index].title
-    })
-    .then(answers => {
-      list[index].title = answers.title;
-      db.write(list);
-    });
 };
