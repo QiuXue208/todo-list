@@ -1,5 +1,5 @@
 {
-  "name": "todo-lists",
+  "name": "@xue_q/todo-list",
   "bin": {
     "t": "cli.js"
   },
