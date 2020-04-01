@@ -1,3 +1,4 @@
+#!/usr/bin/env nodejs
 const { program } = require("commander");
 const api = require("./api.js");
 
