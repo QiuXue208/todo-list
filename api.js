@@ -17,3 +17,12 @@ module.exports.add = async tasks => {
 module.exports.clear = async () => {
   await db.write([]);
 };
+
+module.exports.showAll = async () => {
+  const list = await db.read();
+  if (list.length) {
+    list.map(item => {
+      console.log(`${item.done ? "[√]" : "[x]"} - ${item.title}`);
+    });
+  }
+};
