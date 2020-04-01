@@ -1,9 +1,16 @@
 {
   "name": "todo-list",
-  "version": "1.0.0",
-  "main": "index.js",
+  "bin": {
+    "t": "cli.js"
+  },
+  "files": [
+    "*.js"
+  ],
+  "version": "0.0.1",
+  "main": "api.js",
   "license": "MIT",
   "dependencies": {
-    "commander": "^5.0.0"
+    "commander": "^5.0.0",
+    "inquirer": "^7.1.0"
   }
 }
