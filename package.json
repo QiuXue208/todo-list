@@ -1,12 +1,12 @@
 {
-  "name": "@xue_q/todo-list",
+  "name": "cv-todo",
   "bin": {
     "t": "cli.js"
   },
   "files": [
     "*.js"
   ],
-  "version": "0.1.0",
+  "version": "0.3.0",
   "main": "api.js",
   "license": "MIT",
   "dependencies": {

@@ -1,11 +1,11 @@
 #!/usr/bin/env nodejs
 const { program } = require("commander");
 const api = require("./api.js");
-
+const pkg = require("./package.json");
 program
   .option("-t, --todo", "todo")
   .option("-l, --list", "list")
-  .version("0.0.1", "-v, --version");
+  .version(pkg.version, "-v, --version");
 
 program
   .command("add <taskName> [others...]")
