@@ -25,30 +25,29 @@ module.exports.showAll = async () => {
 };
 
 const showAllTasks = list => {
-  inquirer
-    .prompt({
-      type: "list",
-      name: "index",
-      message: "请选择你要进行的操作",
-      choices: [
-        { name: "退出", value: -1 },
-        { name: "创建任务", value: -2 },
-        ...list.map((item, index) => ({
-          name: `${item.done ? "[√]" : "[x]"} ${index + 1}. ${item.title}`,
-          value: index
-        }))
-      ]
-    })
-    .then(answers => {
-      const { index } = answers;
-      if (index === -2) {
-        // 创建任务
-        askForCreateTask(list);
-      } else if (index >= 0) {
-        // 选中任务
-        askForAction(list, index);
-      }
-    });
+  const questions = {
+    type: "list",
+    name: "index",
+    message: "请选择你要进行的操作",
+    choices: [
+      { name: "退出", value: -1 },
+      { name: "创建任务", value: -2 },
+      ...list.map((item, index) => ({
+        name: `${item.done ? "[√]" : "[x]"} ${index + 1}. ${item.title}`,
+        value: index
+      }))
+    ]
+  };
+  inquirer.prompt(questions).then(answers => {
+    const { index } = answers;
+    if (index === -2) {
+      // 创建任务
+      askForCreateTask(list);
+    } else if (index >= 0) {
+      // 选中任务
+      askForAction(list, index);
+    }
+  });
 };
 
 const askForCreateTask = list => {
@@ -65,36 +64,23 @@ const askForCreateTask = list => {
 };
 
 const askForAction = (list, index) => {
-  inquirer
-    .prompt({
-      type: "list",
-      name: "action",
-      message: "请选择你要进行的操作",
-      choices: [
-        { name: "退出", value: "quit" },
-        { name: "标记为完成", value: "markAsDone" },
-        { name: "标记为未完成", value: "markAsUndone" },
-        { name: "删除", value: "delete" },
-        { name: "编辑", value: "edit" }
-      ]
-    })
-    .then(answers => {
-      const { action } = answers;
-      switch (action) {
-        case "markAsDone":
-          markAsDone(list, index);
-          break;
-        case "markAsUndone":
-          markAsUndone(list, index);
-          break;
-        case "delete":
-          deleteTask(list, index);
-          break;
-        case "edit":
-          editTask(list, index);
-          break;
-      }
-    });
+  const questions = {
+    type: "list",
+    name: "action",
+    message: "请选择你要进行的操作",
+    choices: [
+      { name: "退出", value: "quit" },
+      { name: "标记为完成", value: "markAsDone" },
+      { name: "标记为未完成", value: "markAsUndone" },
+      { name: "删除", value: "deleteTask" },
+      { name: "编辑", value: "editTask" }
+    ]
+  };
+  const actions = { markAsDone, markAsUndone, deleteTask, editTask };
+  inquirer.prompt(questions).then(answers => {
+    const action = actions[answers.action];
+    action && action(list, index);
+  });
 };
 
 const markAsDone = (list, index) => {
