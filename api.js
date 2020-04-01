@@ -21,7 +21,10 @@ module.exports.clear = async () => {
 
 module.exports.showAll = async () => {
   const list = await db.read();
+  showAllTasks(list);
+};
 
+const showAllTasks = list => {
   inquirer
     .prompt({
       type: "list",
@@ -40,61 +43,85 @@ module.exports.showAll = async () => {
       const { index } = answers;
       if (index === -2) {
         // 创建任务
-        inquirer
-          .prompt({
-            type: "input",
-            name: "title",
-            message: "请输入任务名"
-          })
-          .then(answers => {
-            list.push({ title: answers.title, done: false });
-            db.write(list);
-          });
+        askForCreateTask(list);
       } else if (index >= 0) {
         // 选中任务
-        inquirer
-          .prompt({
-            type: "list",
-            name: "action",
-            message: "请选择你要进行的操作",
-            choices: [
-              { name: "退出", value: "quit" },
-              { name: "标记为完成", value: "markAsDone" },
-              { name: "标记为未完成", value: "markAsUndone" },
-              { name: "删除", value: "delete" },
-              { name: "编辑", value: "edit" }
-            ]
-          })
-          .then(answers => {
-            const { action } = answers;
-            switch (action) {
-              case "markAsDone":
-                list[index].done = true;
-                db.write(list);
-                break;
-              case "markAsUndone":
-                list[index].done = false;
-                db.write(list);
-                break;
-              case "delete":
-                list.splice(index, 1);
-                db.write(list);
-                break;
-              case "edit":
-                inquirer
-                  .prompt({
-                    type: "input",
-                    name: "title",
-                    message: "请输入任务名",
-                    default: list[index].title
-                  })
-                  .then(answers => {
-                    list[index].title = answers.title;
-                    db.write(list);
-                  });
-                break;
-            }
-          });
+        askForAction(list, index);
       }
+    });
+};
+
+const askForCreateTask = list => {
+  inquirer
+    .prompt({
+      type: "input",
+      name: "title",
+      message: "请输入任务名"
+    })
+    .then(answers => {
+      list.push({ title: answers.title, done: false });
+      db.write(list);
+    });
+};
+
+const askForAction = (list, index) => {
+  inquirer
+    .prompt({
+      type: "list",
+      name: "action",
+      message: "请选择你要进行的操作",
+      choices: [
+        { name: "退出", value: "quit" },
+        { name: "标记为完成", value: "markAsDone" },
+        { name: "标记为未完成", value: "markAsUndone" },
+        { name: "删除", value: "delete" },
+        { name: "编辑", value: "edit" }
+      ]
+    })
+    .then(answers => {
+      const { action } = answers;
+      switch (action) {
+        case "markAsDone":
+          markAsDone(list, index);
+          break;
+        case "markAsUndone":
+          markAsUndone(list, index);
+          break;
+        case "delete":
+          deleteTask(list, index);
+          break;
+        case "edit":
+          editTask(list, index);
+          break;
+      }
+    });
+};
+
+const markAsDone = (list, index) => {
+  list[index].done = true;
+  db.write(list);
+};
+
+const markAsUndone = (list, index) => {
+  list[index].done = false;
+  db.write(list);
+};
+
+const deleteTask = (list, index) => {
+  list.splice(index, 1);
+  db.write(list);
+};
+
+const editTask = (list, index) => {
+  inquirer
+    .prompt({
+      type: "input",
+      name: "title",
+      message: "请输入任务名",
+      default: list[index].title
+    })
+    .then(answers => {
+      list[index].title = answers.title;
+      db.write(list);
     });
 };
