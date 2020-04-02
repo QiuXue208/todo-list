@@ -6,11 +6,18 @@
   "files": [
     "*.js"
   ],
+  "scripts": {
+    "test": "jest"
+  },
   "version": "0.5.0",
   "main": "api.js",
   "license": "MIT",
   "dependencies": {
     "commander": "^5.0.0",
     "inquirer": "^7.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.1.4",
+    "jest": "^25.2.4"
   }
 }
