@@ -35,8 +35,8 @@ const askForAction = list => {
       { name: "创建任务", value: "askForCreate" },
       { name: "编辑任务", value: "askForEdit" },
       { name: "删除任务", value: "askForDelete" },
-      { name: "编辑为已完成", value: "askForMarkAsDone" },
-      { name: "编辑为未完成", value: "askForMarkAsUndone" }
+      { name: "标记为已完成", value: "askForMarkAsDone" },
+      { name: "标记为未完成", value: "askForMarkAsUndone" }
     ]
   };
   inquirer.prompt(questions).then(answers => {
