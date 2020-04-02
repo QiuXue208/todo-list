@@ -2,6 +2,10 @@ const db = require("../db.js");
 const fs = require("fs");
 jest.mock("fs");
 describe("db", () => {
+  afterEach(() => {
+    //每执行完一个it，就调用改语句
+    fs.clearMocks();
+  });
   it("can read", async () => {
     const data = { title: "study", done: true };
     // 设置某个路径对应的error和data
