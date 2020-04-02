@@ -10,4 +10,15 @@ describe("db", () => {
     const list = await db.read("./xyz");
     expect(list).toStrictEqual(data);
   });
+
+  it("can write", async () => {
+    let fakeFile;
+    fs.setWriteMocks("./yyy", (path, data, callback) => {
+      fakeFile = data;
+      callback(null);
+    });
+    const list = [{ title: "eat", done: false }];
+    await db.write(list, "./yyy");
+    expect(fakeFile).toStrictEqual(JSON.stringify(list) + "\n");
+  });
 });
